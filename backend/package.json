@@ -1,0 +1,22 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "daemon": "^1.1.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "init": "^0.1.2",
+    "mongodb": "^7.0.0"
+  },
+  "scripts": {
+   "dev": "node index.js",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

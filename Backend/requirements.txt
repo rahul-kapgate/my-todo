@@ -1,6 +1,0 @@
-fastapi[standard]
-uvicorn[standard]
-motor
-pydantic-settings
-pymongo[srv]
-python-dotenv
