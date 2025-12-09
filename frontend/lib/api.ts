@@ -20,6 +20,13 @@ export interface CreateTaskInput {
   due_date?: string | null;
 }
 
+export interface UpdateTaskInput {
+  title?: string;
+  description?: string | null;
+  status?: TaskStatus;
+  due_date?: string | null;
+}
+
 export type FilterStatus = TaskStatus | "all";
 
 export interface TaskFilter {
@@ -29,7 +36,7 @@ export interface TaskFilter {
 }
 
 export async function fetchTasks(filter?: TaskFilter): Promise<Task[]> {
-  const url = new URL(`${API_BASE_URL}/tasks/`);
+  const url = new URL(`${API_BASE_URL}/tasks`);
 
   if (filter?.status && filter.status !== "all") {
     url.searchParams.set("status", filter.status);
@@ -53,7 +60,7 @@ export async function fetchTasks(filter?: TaskFilter): Promise<Task[]> {
 }
 
 export async function createTask(data: CreateTaskInput): Promise<Task> {
-  const res = await fetch(`${API_BASE_URL}/tasks/`, {
+  const res = await fetch(`${API_BASE_URL}/tasks`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -65,4 +72,36 @@ export async function createTask(data: CreateTaskInput): Promise<Task> {
   }
 
   return res.json();
+}
+
+/**
+ * Full update for a task (PUT /tasks/:id).
+ * You can send any subset of fields: title, description, status, due_date.
+ */
+export async function updateTask(
+  id: string,
+  data: UpdateTaskInput
+): Promise<Task> {
+  const res = await fetch(`${API_BASE_URL}/tasks/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || "Failed to update task");
+  }
+
+  return res.json();
+}
+
+/**
+ * Convenience helper: only change the status of a task.
+ */
+export async function updateTaskStatus(
+  id: string,
+  status: TaskStatus
+): Promise<Task> {
+  return updateTask(id, { status });
 }
