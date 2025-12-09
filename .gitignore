@@ -1,0 +1,83 @@
+# -------------------------
+# OS-specific junk
+# -------------------------
+.DS_Store
+Thumbs.db
+
+# -------------------------
+# Python / FastAPI
+# -------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtualenvs
+.venv/
+venv/
+ENV/
+env/
+.envrc
+
+# Unit test / coverage
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+
+# Uvicorn / app logs
+*.log
+logs/
+tmp/
+
+# -------------------------
+# Node / React / Next.js
+# -------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Next.js
+.next/
+.next/
+out/
+.vercel/
+
+# Build artifacts
+*.tsbuildinfo
+
+# -------------------------
+# Env & secrets
+# -------------------------
+.env
+.env.*
+!.env.example        # keep a sample env file in git
+
+# Sometimes you might have envs in subfolders (Backend, Frontend)
+Backend/.env
+Frontend/.env
+
+# -------------------------
+# Editor / IDE
+# -------------------------
+.vscode/
+.idea/
+*.code-workspace
+
+# -------------------------
+# Misc
+# -------------------------
+*.swp
+*.swo
