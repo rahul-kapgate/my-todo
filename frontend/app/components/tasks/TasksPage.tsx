@@ -118,7 +118,7 @@ export const TasksPage = () => {
     }
   };
 
-  // 🔥 NEW: change status via PUT API and update UI
+  // change status via PUT API and update UI
   const handleChangeStatus = async (task: Task, newStatus: TaskStatus) => {
     if (task.status === newStatus) return;
 
@@ -142,23 +142,25 @@ export const TasksPage = () => {
   };
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-50 flex items-center justify-center">
-      <div className="max-w-5xl w-full p-6 md:p-10 border border-neutral-700 rounded-2xl bg-neutral-900/70">
-        <header className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">
+    <main className="min-h-screen bg-neutral-950 text-neutral-50">
+      <div className="mx-auto flex h-screen max-w-6xl flex-col px-4 py-4 md:px-6 md:py-6 lg:px-8 lg:py-8">
+        {/* Header */}
+        <header className="mb-4 flex items-center justify-between md:mb-6">
+          <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
             Tasks
           </h1>
           <button
             onClick={handleAddClick}
-            className="inline-flex items-center rounded-full border border-neutral-400 px-4 py-1.5 text-sm font-medium hover:bg-neutral-100 hover:text-black transition-colors"
+            className="inline-flex items-center rounded-full border border-neutral-400 px-4 py-1.5 text-sm font-medium transition-colors hover:bg-neutral-100 hover:text-black"
           >
             Add Task
           </button>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr] gap-6">
+        {/* Main content area fills remaining height */}
+        <div className="grid flex-1 grid-cols-1 gap-6 md:grid-cols-[1.4fr_1fr]">
           {/* LEFT: Task list + filters */}
-          <section className="border border-neutral-700 rounded-xl p-4 bg-neutral-900/60">
+          <section className="flex flex-col rounded-xl border border-neutral-700 bg-neutral-900/60 p-4 md:p-5">
             <TaskFilters
               filterDate={filterDate}
               onFilterDateChange={setFilterDate}
@@ -166,17 +168,19 @@ export const TasksPage = () => {
               onFilterStatusChange={setFilterStatus}
             />
 
-            <TaskList
-              tasks={tasks}
-              loading={loading}
-              error={error}
-              selectedTaskId={selectedTask?.id ?? null}
-              onSelectTask={setSelectedTask}
-            />
+            <div className="mt-2 flex-1 overflow-hidden">
+              <TaskList
+                tasks={tasks}
+                loading={loading}
+                error={error}
+                selectedTaskId={selectedTask?.id ?? null}
+                onSelectTask={setSelectedTask}
+              />
+            </div>
           </section>
 
           {/* RIGHT: Add Task form + Details */}
-          <div className="space-y-4">
+          <div className="flex flex-col gap-4">
             {showAddForm && (
               <TaskForm
                 creating={creating}
