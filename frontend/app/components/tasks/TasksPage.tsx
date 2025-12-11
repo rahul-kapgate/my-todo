@@ -181,13 +181,13 @@ export const TasksPage = () => {
 
           {/* RIGHT: Add Task form + Details */}
           <div className="flex flex-col gap-4">
-            {showAddForm && (
-              <TaskForm
-                creating={creating}
-                onSubmit={handleCreateTask}
-                onCancel={() => setShowAddForm(false)}
-              />
-            )}
+            <TaskForm
+              open={showAddForm}
+              creating={creating}
+              onSubmit={handleCreateTask}
+              onCancel={() => setShowAddForm(false)}
+            />
+
 
             {selectedTask && (
               <TaskDetails
