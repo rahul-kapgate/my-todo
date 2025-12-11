@@ -3,6 +3,7 @@
 
 import { Task, TaskStatus } from "@/lib/api";
 import { formatToIST } from "@/lib/date";
+import { CalendarDays, Info, ListChecks } from "lucide-react";
 
 type TaskDetailsProps = {
   task: Task;
@@ -15,54 +16,103 @@ const STATUS_LABELS: Record<TaskStatus, string> = {
   done: "Done",
 };
 
+const STATUS_BADGE_STYLES: Record<TaskStatus, string> = {
+  todo: "bg-amber-500/10 text-amber-300 border-amber-500/40",
+  in_progress: "bg-blue-500/10 text-blue-300 border-blue-500/40",
+  done: "bg-emerald-500/10 text-emerald-300 border-emerald-500/40",
+};
+
 export const TaskDetails: React.FC<TaskDetailsProps> = ({
   task,
   onChangeStatus,
 }) => {
+  const statusLabel = STATUS_LABELS[task.status];
+
   return (
-    <section className="border border-neutral-700 rounded-xl p-4 bg-neutral-900/70 text-sm">
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-base font-semibold">{task.title}</h2>
-        <span className="text-xs text-neutral-400">
-          {formatToIST(task.due_date ?? task.created_at)}
-        </span>
-      </div>
-
-      <div className="mb-2">
-        <p className="text-xs uppercase text-neutral-400 mb-1">Description</p>
-        <p className="whitespace-pre-wrap">
-          {task.description || "No description"}
-        </p>
-      </div>
-
-      <div className="space-y-2">
-        <div>
-          <p className="text-xs uppercase text-neutral-400 mb-1">Status</p>
-          <p className="inline-flex items-center px-2 py-0.5 rounded-full border border-neutral-600 text-xs">
-            {task.status.replace("_", " ")}
-          </p>
+    <section className="rounded-2xl border border-neutral-800 bg-neutral-900/80 p-4 sm:p-5 shadow-md shadow-black/30 text-sm space-y-4">
+      {/* Header */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div className="space-y-1">
+          <h2 className="text-base sm:text-lg font-semibold text-neutral-50 leading-snug">
+            {task.title}
+          </h2>
+          <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-400">
+            <span className="inline-flex items-center gap-1">
+              <CalendarDays className="h-3.5 w-3.5" />
+              {task.due_date ? "Due:" : "Created:"}{" "}
+              <span className="text-neutral-200">
+                {formatToIST(task.due_date ?? task.created_at)}
+              </span>
+            </span>
+          </div>
         </div>
 
-        {/* 🔥 New: change status UI */}
-        {onChangeStatus && (
-          <div className="space-y-1">
-            <p className="text-xs uppercase text-neutral-400 mb-1">
-              Change status
-            </p>
-            <select
-              value={task.status}
-              onChange={(e) => onChangeStatus(e.target.value as TaskStatus)}
-              className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-blue-400"
-            >
-              {Object.entries(STATUS_LABELS).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        {/* Current status badge */}
+        <div className="flex items-start">
+          <span
+            className={[
+              "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium",
+              STATUS_BADGE_STYLES[task.status],
+            ].join(" ")}
+          >
+            <ListChecks className="h-3.5 w-3.5" />
+            {statusLabel}
+          </span>
+        </div>
       </div>
+
+      {/* Description */}
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-1.5 text-xs uppercase tracking-wide text-neutral-400">
+          <Info className="h-3.5 w-3.5" />
+          <span>Description</span>
+        </div>
+        <div className="rounded-lg border border-neutral-800 bg-neutral-950/60 px-3 py-2">
+          <p className="whitespace-pre-wrap text-sm text-neutral-100">
+            {task.description ? (
+              task.description
+            ) : (
+              <span className="italic text-neutral-500">No description</span>
+            )}
+          </p>
+        </div>
+      </div>
+
+      {/* Change status */}
+      {onChangeStatus && (
+        <div className="space-y-2 pt-1 border-t border-neutral-800/70">
+          <p className="text-xs uppercase tracking-wide text-neutral-400 flex items-center gap-1.5">
+            <span className="inline-block h-1 w-1 rounded-full bg-blue-400" />
+            Change status
+          </p>
+
+          <div className="flex flex-wrap gap-2">
+            {(Object.keys(STATUS_LABELS) as TaskStatus[]).map((status) => {
+              const isActive = status === task.status;
+
+              return (
+                <button
+                  key={status}
+                  type="button"
+                  onClick={() => !isActive && onChangeStatus(status)}
+                  className={[
+                    "rounded-full px-3 py-1.5 text-xs font-medium border transition-all",
+                    "flex items-center gap-1.5",
+                    isActive
+                      ? STATUS_BADGE_STYLES[status] +
+                        " shadow-sm shadow-black/40 cursor-default"
+                      : "border-neutral-700 text-neutral-300 hover:border-neutral-500 hover:bg-neutral-800/70",
+                  ].join(" ")}
+                >
+                  <span className="capitalize">
+                    {STATUS_LABELS[status]}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </section>
   );
 };

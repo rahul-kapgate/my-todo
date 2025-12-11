@@ -97,17 +97,25 @@ async function updateTask(req, res) {
     const db = await getDb();
     const collection = db.collection("tasks");
 
-    const result = await collection.findOneAndUpdate(
+    const rawResult = await collection.findOneAndUpdate(
       { _id: new ObjectId(id) },
       { $set: update },
       { returnDocument: "after" }
     );
 
-    if (!result.value) {
+    // console.log("findOneAndUpdate rawResult:", rawResult);
+
+    // Support both shapes: { value: doc } or just doc
+    const updatedDoc =
+      rawResult && typeof rawResult === "object" && "value" in rawResult
+        ? rawResult.value
+        : rawResult;
+
+    if (!updatedDoc) {
       return res.status(404).json({ detail: "Task not found" });
     }
 
-    res.json(mapTask(result.value));
+    res.json(mapTask(updatedDoc));
   } catch (err) {
     console.error("Error updating task:", err);
     res.status(500).json({ detail: "Internal server error" });
