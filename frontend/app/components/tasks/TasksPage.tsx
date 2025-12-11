@@ -45,18 +45,26 @@ export const TasksPage = () => {
       try {
         setLoading(true);
         setError(null);
-
+  
         const { fromDue, toDue } = getDayRangeIso(filterDate);
-
+  
+        // detect “today”
+        const now = new Date();
+        const isToday =
+          filterDate &&
+          filterDate.getFullYear() === now.getFullYear() &&
+          filterDate.getMonth() === now.getMonth() &&
+          filterDate.getDate() === now.getDate();
+  
         const data = await fetchTasks({
           status: filterStatus,
           fromDue,
           toDue,
+          includeOverdueForToday: !!isToday, // 👈 key part
         });
-
+  
         setTasks(data);
-
-        // keep selected task if still present
+  
         if (selectedTask) {
           const stillThere = data.find((t) => t.id === selectedTask.id);
           if (!stillThere) setSelectedTask(null);
@@ -68,10 +76,10 @@ export const TasksPage = () => {
         setLoading(false);
       }
     }
-
+  
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterDate, filterStatus]);
+  }, [filterDate, filterStatus]);  
 
   const handleAddClick = () => {
     setShowAddForm(true);

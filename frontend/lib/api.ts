@@ -33,6 +33,8 @@ export interface TaskFilter {
   status?: FilterStatus;
   fromDue?: string;
   toDue?: string;
+  /** When true: backend will return tasks due today + all past-due not-done tasks */
+  includeOverdueForToday?: boolean;
 }
 
 export async function fetchTasks(filter?: TaskFilter): Promise<Task[]> {
@@ -46,6 +48,9 @@ export async function fetchTasks(filter?: TaskFilter): Promise<Task[]> {
   }
   if (filter?.toDue) {
     url.searchParams.set("to_due", filter.toDue);
+  }
+  if (filter?.includeOverdueForToday) {
+    url.searchParams.set("include_overdue_for_today", "true");
   }
 
   const res = await fetch(url.toString(), {
