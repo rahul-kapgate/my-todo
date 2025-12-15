@@ -1,14 +1,18 @@
 "use client";
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { FilterStatus } from "@/lib/api";
+import { FilterStatus, FilterPriority } from "@/lib/api";
 import { CalendarDays, Filter } from "lucide-react";
 
 type TaskFiltersProps = {
   filterDate: Date | null;
   onFilterDateChange: (value: Date | null) => void;
+
   filterStatus: FilterStatus;
   onFilterStatusChange: (value: FilterStatus) => void;
+
+  filterPriority: FilterPriority; // ✅ NEW
+  onFilterPriorityChange: (value: FilterPriority) => void;
 };
 
 const STATUS_OPTIONS: { value: FilterStatus; label: string }[] = [
@@ -18,11 +22,21 @@ const STATUS_OPTIONS: { value: FilterStatus; label: string }[] = [
   { value: "done", label: "Done" },
 ];
 
+const PRIORITY_OPTIONS: { value: FilterPriority; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "low", label: "Low" },
+  { value: "medium", label: "Medium" },
+  { value: "high", label: "High" },
+];
+
+
 export const TaskFilters: React.FC<TaskFiltersProps> = ({
   filterDate,
   onFilterDateChange,
   filterStatus,
   onFilterStatusChange,
+  filterPriority,
+  onFilterPriorityChange,
 }) => {
   return (
     <section className="mb-4 rounded-xl border border-neutral-800 bg-neutral-900/80 px-3 py-3 sm:px-4 sm:py-3.5">
@@ -105,6 +119,33 @@ export const TaskFilters: React.FC<TaskFiltersProps> = ({
             })}
           </div>
         </div>
+        {/* ✅ Priority filter */}
+        <div className="flex flex-col gap-1 text-xs text-neutral-300">
+          <span className="text-[11px] uppercase tracking-wide text-neutral-400">
+            Priority
+          </span>
+          <div className="flex flex-wrap gap-1.5">
+            {PRIORITY_OPTIONS.map((option) => {
+              const isActive = filterPriority === option.value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => onFilterPriorityChange(option.value)}
+                  className={[
+                    "rounded-full px-3 py-1.5 text-[11px] font-medium border transition-all",
+                    isActive
+                      ? "border-violet-500 bg-violet-500/15 text-violet-200 shadow-sm shadow-black/40"
+                      : "border-neutral-700 bg-neutral-950 text-neutral-300 hover:border-neutral-500 hover:bg-neutral-800/70",
+                  ].join(" ")}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
       </div>
     </section>
   );

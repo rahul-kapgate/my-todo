@@ -6,6 +6,7 @@ import {
   Task,
   TaskStatus,
   FilterStatus,
+  FilterPriority,
   fetchTasks,
   createTask,
   updateTaskStatus,
@@ -34,6 +35,7 @@ export const TasksPage = () => {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [filterPriority, setFilterPriority] = useState<FilterPriority>("all");
 
   // Filters
   const [filterDate, setFilterDate] = useState<Date | null>(new Date());
@@ -45,9 +47,9 @@ export const TasksPage = () => {
       try {
         setLoading(true);
         setError(null);
-  
+
         const { fromDue, toDue } = getDayRangeIso(filterDate);
-  
+
         // detect “today”
         const now = new Date();
         const isToday =
@@ -55,16 +57,17 @@ export const TasksPage = () => {
           filterDate.getFullYear() === now.getFullYear() &&
           filterDate.getMonth() === now.getMonth() &&
           filterDate.getDate() === now.getDate();
-  
+
         const data = await fetchTasks({
           status: filterStatus,
+          priority: filterPriority,
           fromDue,
           toDue,
-          includeOverdueForToday: !!isToday, // 👈 key part
+          includeOverdueForToday: !!isToday,
         });
-  
+
         setTasks(data);
-  
+
         if (selectedTask) {
           const stillThere = data.find((t) => t.id === selectedTask.id);
           if (!stillThere) setSelectedTask(null);
@@ -76,17 +79,17 @@ export const TasksPage = () => {
         setLoading(false);
       }
     }
-  
+
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterDate, filterStatus]);  
+  }, [filterDate, filterStatus, filterPriority]);
 
   const handleAddClick = () => {
     setShowAddForm(true);
   };
 
   const handleCreateTask = async (values: TaskFormValues) => {
-    const { title, description, status, dueDate } = values;
+    const { title, description, status,priority, dueDate } = values;
     if (!title.trim()) return;
 
     try {
@@ -97,6 +100,7 @@ export const TasksPage = () => {
         title: title.trim(),
         description: description?.trim() || undefined,
         status,
+        priority,
         due_date: dueDate ? dueDate.toISOString() : undefined,
       };
 
@@ -174,6 +178,8 @@ export const TasksPage = () => {
               onFilterDateChange={setFilterDate}
               filterStatus={filterStatus}
               onFilterStatusChange={setFilterStatus}
+              filterPriority={filterPriority}
+              onFilterPriorityChange={setFilterPriority}
             />
 
             <div className="mt-2 flex-1 overflow-hidden">

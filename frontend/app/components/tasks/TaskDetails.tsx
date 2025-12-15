@@ -1,7 +1,7 @@
 // components/tasks/TaskDetails.tsx
 "use client";
 
-import { Task, TaskStatus } from "@/lib/api";
+import { Task, TaskStatus, TaskPriority } from "@/lib/api";
 import { formatToIST } from "@/lib/date";
 import { CalendarDays, Info, ListChecks } from "lucide-react";
 
@@ -21,6 +21,20 @@ const STATUS_BADGE_STYLES: Record<TaskStatus, string> = {
   in_progress: "bg-blue-500/10 text-blue-300 border-blue-500/40",
   done: "bg-emerald-500/10 text-emerald-300 border-emerald-500/40",
 };
+
+
+const PRIORITY_LABELS: Record<TaskPriority, string> = {
+  low: "Low",
+  medium: "Medium",
+  high: "High",
+};
+
+const PRIORITY_BADGE_STYLES: Record<TaskPriority, string> = {
+  low: "bg-neutral-500/10 text-neutral-200 border-neutral-500/40",
+  medium: "bg-violet-500/10 text-violet-200 border-violet-500/40",
+  high: "bg-red-500/10 text-red-200 border-red-500/40",
+};
+
 
 export const TaskDetails: React.FC<TaskDetailsProps> = ({
   task,
@@ -48,7 +62,16 @@ export const TaskDetails: React.FC<TaskDetailsProps> = ({
         </div>
 
         {/* Current status badge */}
-        <div className="flex items-start">
+        <div className="flex items-start gap-2">
+          <span
+            className={[
+              "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium",
+              PRIORITY_BADGE_STYLES[task.priority],
+            ].join(" ")}
+          >
+            {PRIORITY_LABELS[task.priority]}
+          </span>
+
           <span
             className={[
               "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium",
@@ -100,7 +123,7 @@ export const TaskDetails: React.FC<TaskDetailsProps> = ({
                     "flex items-center gap-1.5",
                     isActive
                       ? STATUS_BADGE_STYLES[status] +
-                        " shadow-sm shadow-black/40 cursor-default"
+                      " shadow-sm shadow-black/40 cursor-default"
                       : "border-neutral-700 text-neutral-300 hover:border-neutral-500 hover:bg-neutral-800/70",
                   ].join(" ")}
                 >

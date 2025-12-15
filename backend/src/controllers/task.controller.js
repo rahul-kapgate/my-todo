@@ -1,6 +1,6 @@
 // src/controllers/task.controller.js
 const { getDb } = require("../config/db");
-const { mapTask, isValidTaskId, ObjectId } = require("../models/task.model");
+const { mapTask, isValidTaskId, ObjectId, PRIORITIES, isValidPriority } = require("../models/task.model");
 
 // GET /api/v1/tasks?status=&from_due=&to_due=&include_overdue_for_today=true
 async function getTasks(req, res) {
@@ -8,7 +8,7 @@ async function getTasks(req, res) {
     const db = await getDb();
     const collection = db.collection("tasks");
 
-    const { status, from_due, to_due, include_overdue_for_today } = req.query;
+    const { status, priority, from_due, to_due, include_overdue_for_today } = req.query;
 
     const baseQuery = {};
     const orClauses = [];
@@ -16,6 +16,11 @@ async function getTasks(req, res) {
     // status filter (skip "all" if you send it from frontend)
     if (status && status !== "all") {
       baseQuery.status = status;
+    }
+
+    // priority filter (skip "all" if you send it from frontend)
+    if (priority && priority !== "all") {
+      baseQuery.priority = priority;
     }
 
     // If we want: today + all past due (not done)
@@ -81,10 +86,14 @@ async function getTasks(req, res) {
 // POST /api/v1/tasks
 async function createTask(req, res) {
   try {
-    const { title, description, status, due_date } = req.body;
+    const { title, description, status, priority, due_date } = req.body;
 
     if (!title || typeof title !== "string") {
       return res.status(400).json({ detail: "title is required" });
+    }
+
+    if (priority !== undefined && !isValidPriority(priority)) {
+      return res.status(400).json({ detail: `priority must be one of: ${PRIORITIES.join(", ")}` });
     }
 
     const now = new Date();
@@ -94,6 +103,7 @@ async function createTask(req, res) {
       title,
       description: description ?? null,
       status: status || "todo",
+      priority: priority || "medium",
       due_date: due,
       created_at: now,
       updated_at: now,
@@ -120,7 +130,7 @@ async function updateTask(req, res) {
       return res.status(400).json({ detail: "Invalid task id" });
     }
 
-    const { title, description, status, due_date } = req.body;
+    const { title, description, status, priority, due_date } = req.body;
 
     const update = {
       updated_at: new Date(),
@@ -132,6 +142,7 @@ async function updateTask(req, res) {
     if (due_date !== undefined) {
       update.due_date = due_date ? new Date(due_date) : null;
     }
+    if (priority !== undefined) update.priority = priority; // ✅ added
 
     const db = await getDb();
     const collection = db.collection("tasks");

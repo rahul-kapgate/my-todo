@@ -21,10 +21,11 @@ export const TaskList: React.FC<TaskListProps> = ({
   return (
     <>
       {/* Header row */}
-      <div className="grid grid-cols-[2fr_1.4fr_1fr] text-sm font-medium border-b border-neutral-700 pb-2 mb-2">
+      <div className="grid grid-cols-[2fr_1.4fr_1fr_0.8fr] text-sm font-medium border-b border-neutral-700 pb-2 mb-2">
         <span>Title</span>
         <span>Date &amp; time</span>
         <span>Status</span>
+        <span>Priority</span>
       </div>
 
       {loading && (
@@ -57,7 +58,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                   : "border-neutral-700/80 bg-neutral-900/80 hover:bg-neutral-800",
               ].join(" ")}
             >
-              <div className="grid grid-cols-[2fr_1.4fr_1fr] items-center gap-2">
+              <div className="grid grid-cols-[2fr_1.4fr_1fr_0.8fr] items-center gap-2">
                 {/* Title */}
                 <div
                   className={
@@ -95,6 +96,10 @@ export const TaskList: React.FC<TaskListProps> = ({
                       Overdue
                     </span>
                   )}
+                </div>
+
+                <div className="text-xs uppercase tracking-wide text-neutral-200">
+                  {task.priority}
                 </div>
               </div>
             </button>

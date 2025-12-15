@@ -3,12 +3,13 @@
 import { useState, FormEvent } from "react";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
-import { TaskStatus } from "@/lib/api";
+import { TaskStatus, TaskPriority } from "@/lib/api";
 
 export type TaskFormValues = {
   title: string;
   description?: string;
   status: TaskStatus;
+  priority: TaskPriority;
   dueDate: Date | null;
 };
 
@@ -21,6 +22,12 @@ const STATUS_OPTIONS: StatusOption[] = [
   { value: "todo",        label: "To do" },
   { value: "in_progress", label: "In progress" },
   { value: "done",        label: "Done" },
+];
+
+const PRIORITY_OPTIONS: { value: TaskPriority; label: string }[] = [
+  { value: "low", label: "Low" },
+  { value: "medium", label: "Medium" },
+  { value: "high", label: "High" },
 ];
 
 type TaskFormProps = {
@@ -40,6 +47,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState<Date | null>(new Date());
   const [status, setStatus] = useState<TaskStatus>("todo");
+  const [priority, setPriority] = useState<TaskPriority>("medium");
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -49,6 +57,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
       title,
       description,
       status,
+      priority,
       dueDate,
     });
 
@@ -57,6 +66,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
     setDescription("");
     setDueDate(new Date());
     setStatus("todo");
+    setPriority("medium");
   };
 
   const handleClose = () => {
@@ -152,6 +162,22 @@ export const TaskForm: React.FC<TaskFormProps> = ({
               ))}
             </select>
           </div>
+
+          <div className="space-y-1">
+  <label className="block text-neutral-300">Priority</label>
+  <select
+    value={priority}
+    onChange={(e) => setPriority(e.target.value as TaskPriority)}
+    className="w-full rounded-md border border-neutral-700 bg-neutral-950 px-2 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-400"
+  >
+    {PRIORITY_OPTIONS.map((opt) => (
+      <option key={opt.value} value={opt.value}>
+        {opt.label}
+      </option>
+    ))}
+  </select>
+</div>
+
 
           {/* We keep actions in DialogActions instead of here */}
         </form>
